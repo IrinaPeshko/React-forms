@@ -35,6 +35,7 @@ const HookForm = () => {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmitHandler)}>
+      <h1>Hook form</h1>
       <h2>Lets sign you in.</h2>
 
       <div className={styles.inputBlock}>
