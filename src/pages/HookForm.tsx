@@ -7,6 +7,7 @@ import { IForm } from '../types/types';
 
 const HookForm = () => {
   const [imagePreview, setImagePreview] = useState<string>('');
+
   const {
     register,
     handleSubmit,
@@ -14,6 +15,7 @@ const HookForm = () => {
     trigger,
     setValue,
   } = useForm({ resolver: yupResolver(schema), mode: 'onChange' });
+
   const onSubmitHandler = (data: IForm) => {
     if (data.picture instanceof File || typeof data.picture === 'undefined') {
       console.log('Valid data:', data);
