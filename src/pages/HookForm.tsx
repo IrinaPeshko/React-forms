@@ -2,7 +2,7 @@ import styles from '../styles/form.module.css';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
-import { countries, schema } from '../constants/constants';
+import { schema } from '../utils/yup';
 import { IForm, ISubmitForm } from '../types/types';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { setData } from '../store/reducers/dataSlice';
@@ -13,6 +13,7 @@ const HookForm = () => {
   const [imagePreview, setImagePreview] = useState<string>('');
   const dispatch = useAppDispatch();
   const actualData = useAppSelector((store) => store.data);
+  const countries = useAppSelector((store) => store.countries);
   const {
     register,
     handleSubmit,

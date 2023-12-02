@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
-import { countries } from '../constants/constants';
 import styles from '../styles/form.module.css';
-import { schema } from '../constants/constants';
+import { schema } from '../utils/yup';
 import { FormField, IUncontrolledForm } from '../types/types';
 import { ValidationError } from 'yup';
 import { convertImage } from '../utils/utils';
@@ -23,6 +22,7 @@ const UncontrolledForm = () => {
   const navigate = useNavigate();
 
   const actualData = useAppSelector((store) => store.data);
+  const countries = useAppSelector((store) => store.countries);
 
   const [errors, setErrors] = useState<IUncontrolledForm>({});
   const [imagePreview, setImagePreview] = useState<string>('');
