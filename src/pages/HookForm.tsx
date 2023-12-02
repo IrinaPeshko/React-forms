@@ -17,7 +17,7 @@ const HookForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     trigger,
     setValue,
   } = useForm({ resolver: yupResolver(schema), mode: 'onChange' });
@@ -215,7 +215,13 @@ const HookForm = () => {
       </div>
 
       <div>
-        <button type="submit">Submit</button>
+        {isValid ? (
+          <button type="submit">Submit</button>
+        ) : (
+          <button type="submit" disabled>
+            Submit
+          </button>
+        )}
       </div>
       <Link to="/" className={styles.smallLink}>
         Go to main page
