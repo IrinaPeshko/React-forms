@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const schema = yup.object().shape({
   name: yup
@@ -30,7 +31,11 @@ export const schema = yup.object().shape({
       const file = value as File;
       return !file || file.size <= 1024 * 1024 * 2;
     }),
-  email: yup.string().email().required(),
+  email: yup
+    .string()
+    .required('Email is required')
+    .matches(emailRegex, 'Invalid email format. Example: name@example.com')
+    .email('Invalid email format. Example: name@example.com'),
   password: yup
     .string()
     .required('Password is required')
