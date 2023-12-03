@@ -1,15 +1,18 @@
 import { useRef, useState } from 'react';
 import styles from '../styles/form.module.css';
 import { schema } from '../utils/yup';
-import { FormField, IUncontrolledForm } from '../types/types';
+import { FormFieldKeys, IUncontrolledForm } from '../types/types';
 import { ValidationError } from 'yup';
 import { convertImage } from '../utils/utils';
 import { useAppDispatch, useAppSelector } from '../store/store';
-import { setData } from '../store/reducers/dataSlice';
-import { Link, useNavigate } from 'react-router-dom';
+import { setData, setLastElement } from '../store/reducers/dataSlice';
+import { useNavigate } from 'react-router-dom';
 import PasswordStrength, {
   getPasswordStrength,
 } from '../components/PasswordStrength';
+import GenderRadioGroup from '../components/UncontrolledForm/GenderRadioGroup';
+import CountriesAutoComplete from '../components/Countries';
+import SubmitBtn from '../components/UncontrolledForm/SubmitBtn';
 
 const UncontrolledForm = () => {
   const nameRef = useRef<HTMLInputElement>(null);
@@ -25,7 +28,6 @@ const UncontrolledForm = () => {
   const navigate = useNavigate();
 
   const actualData = useAppSelector((store) => store.data);
-  const countries = useAppSelector((store) => store.countries);
 
   const [errors, setErrors] = useState<IUncontrolledForm>({});
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -66,7 +68,8 @@ const UncontrolledForm = () => {
     const value = getPasswordStrength(event.target.value);
     setPasswordStrengthValue(value);
   };
-  const handleInputChange = (fieldName: FormField) => {
+
+  const handleInputChange = (fieldName: FormFieldKeys) => {
     setErrors((prevErrors) => {
       const updatedErrors = { ...prevErrors };
       delete updatedErrors[fieldName];
@@ -97,6 +100,9 @@ const UncontrolledForm = () => {
       const newData = { ...data, picture: base64Image };
       const newArrData = [newData, ...actualData];
       dispatch(setData(newArrData));
+      dispatch(
+        setLastElement({ boxShadow: '0 0 20px 10px rgba(34, 255, 0, 0.3)' })
+      );
       navigate('/');
     }
   }
@@ -105,7 +111,6 @@ const UncontrolledForm = () => {
     <form className={styles.form} onSubmit={handleSubmit}>
       <h1>Uncontrolled Form</h1>
       <h2>Lets sign you in.</h2>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="name">
           Name
@@ -122,7 +127,6 @@ const UncontrolledForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="age">
           Age
@@ -140,45 +144,12 @@ const UncontrolledForm = () => {
           </p>
         )}
       </div>
-
-      <div className={styles.inputBlock}>
-        <p className={styles.label}>Gender:</p>
-        <div className={styles.radioBlock}>
-          <div className={styles.maleBlock}>
-            <input
-              type="radio"
-              id="male"
-              name="gender"
-              value="male"
-              ref={maleRef}
-              onChange={() => handleInputChange('gender')}
-            />
-            <label className={styles.labelRadio} htmlFor="male">
-              Male
-            </label>
-          </div>
-
-          <div className={styles.maleBlock}>
-            <input
-              type="radio"
-              id="female"
-              name="gender"
-              value="female"
-              ref={femaleRef}
-              onChange={() => handleInputChange('gender')}
-            />
-            <label className={styles.labelRadio} htmlFor="female">
-              Female
-            </label>
-          </div>
-        </div>
-        {errors.gender && (
-          <p className={`${styles.errorMessage} ${styles.show}`}>
-            {errors['gender']}
-          </p>
-        )}
-      </div>
-
+      <GenderRadioGroup
+        maleRef={maleRef}
+        femaleRef={femaleRef}
+        error={errors.gender}
+        setErrors={setErrors}
+      />
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="country">
           Country
@@ -192,19 +163,14 @@ const UncontrolledForm = () => {
             ref={countryRef}
             onChange={() => handleInputChange('country')}
           />
-          <datalist id="countries">
-            {countries.map((el, i) => {
-              return <option key={i} value={el} />;
-            })}
-          </datalist>
+          <CountriesAutoComplete />
         </div>
-        {errors.gender && (
+        {errors.country && (
           <p className={`${styles.errorMessage} ${styles.show}`}>
             {errors['country']}
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="picture">
           Picture
@@ -225,7 +191,6 @@ const UncontrolledForm = () => {
           <p className={`${styles.errorMessage}`}>{errors.picture}</p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="email">
           Email
@@ -242,7 +207,6 @@ const UncontrolledForm = () => {
           </p>
         )}
       </div>
-
       <div className={`${styles.inputBlock} ${styles.passwordBlock}`}>
         <label className={styles.label} htmlFor="password">
           Password
@@ -260,7 +224,6 @@ const UncontrolledForm = () => {
         )}
         <PasswordStrength strength={passwordStrengthValue} />
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="confirmPassword">
           Confirm password
@@ -277,7 +240,6 @@ const UncontrolledForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.checkboxLabel} htmlFor="accept">
           I agree to the terms of service
@@ -294,15 +256,7 @@ const UncontrolledForm = () => {
           </p>
         )}
       </div>
-
-      <div>
-        <button type="submit" className={styles.submitBtn}>
-          Submit
-        </button>
-      </div>
-      <Link className={styles.smallLink} to="/">
-        Go to main page
-      </Link>
+      <SubmitBtn />
     </form>
   );
 };

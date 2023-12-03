@@ -5,18 +5,21 @@ import { useState } from 'react';
 import { schema } from '../utils/yup';
 import { IForm, ISubmitForm } from '../types/types';
 import { useAppDispatch, useAppSelector } from '../store/store';
-import { setData } from '../store/reducers/dataSlice';
+import { setData, setLastElement } from '../store/reducers/dataSlice';
 import { convertImage } from '../utils/utils';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PasswordStrength, {
   getPasswordStrength,
 } from '../components/PasswordStrength';
+import FormImage from '../components/HookForm/FormImage';
+import CountriesAutoComplete from '../components/Countries';
+import Password from '../components/HookForm/Password';
+import SubmitBtn from '../components/HookForm/SubmitBtn';
 
 const HookForm = () => {
   const [imagePreview, setImagePreview] = useState<string>('');
   const dispatch = useAppDispatch();
   const actualData = useAppSelector((store) => store.data);
-  const countries = useAppSelector((store) => store.countries);
   const {
     register,
     handleSubmit,
@@ -33,6 +36,9 @@ const HookForm = () => {
       const newData: ISubmitForm = { ...data, picture: base64Image };
       const newArrData: ISubmitForm[] = [newData, ...actualData];
       dispatch(setData(newArrData));
+      dispatch(
+        setLastElement({ boxShadow: '0 0 20px 10px rgba(34, 255, 0, 0.3)' })
+      );
       navigate('/');
     } else {
       console.error('Invalid picture type');
@@ -54,13 +60,13 @@ const HookForm = () => {
     setPasswordStrengthValue(strength);
     setValue('password', password);
     trigger('password');
+    trigger('confirmPassword');
   };
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmitHandler)}>
       <h1>Hook form</h1>
       <h2>Lets sign you in.</h2>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="name">
           Name
@@ -72,7 +78,6 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="age">
           Age
@@ -89,7 +94,6 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <p className={styles.label}>Gender:</p>
         <div className={styles.radioBlock}>
@@ -125,7 +129,6 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="country">
           Country
@@ -138,11 +141,7 @@ const HookForm = () => {
             name="country"
             id="country"
           />
-          <datalist id="countries">
-            {countries.map((el, i) => {
-              return <option key={i} value={el} />;
-            })}
-          </datalist>
+          <CountriesAutoComplete />
         </div>
         {errors.country && (
           <p className={`${styles.errorMessage} ${styles.show}`}>
@@ -150,26 +149,15 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
-        <label className={styles.label} htmlFor="picture">
-          Picture
-        </label>
-        <input
-          id="picture"
-          type="file"
-          onChange={(e) => {
-            handleFileChange(e);
-          }}
+        <FormImage
+          imagePreview={imagePreview}
+          handleFileChange={handleFileChange}
         />
-        {imagePreview && (
-          <img className={styles.fileImage} src={imagePreview} alt="Preview" />
-        )}
         {errors.picture && (
           <p className={`${styles.errorMessage}`}>{errors.picture.message}</p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="email">
           Email
@@ -181,18 +169,9 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
       <div className={`${styles.inputBlock} ${styles.passwordBlock}`}>
-        <label className={styles.label} htmlFor="password">
-          Password
-        </label>
-        <input
-          className={styles.textInput}
-          id="password"
-          onChange={(e) => {
-            handlePasswordChange(e);
-          }}
-        />
+        <Password handlePasswordChange={handlePasswordChange} />
+
         {errors.password && (
           <p className={`${styles.errorMessage} ${styles.show}`}>
             {errors.password.message}
@@ -200,7 +179,6 @@ const HookForm = () => {
         )}
         <PasswordStrength strength={passwordStrengthValue} />
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.label} htmlFor="confirmPassword">
           Confirm password
@@ -216,7 +194,6 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
       <div className={styles.inputBlock}>
         <label className={styles.checkboxLabel} htmlFor="accept">
           I agree to the terms of service
@@ -228,21 +205,7 @@ const HookForm = () => {
           </p>
         )}
       </div>
-
-      <div>
-        {isValid ? (
-          <button type="submit" className={styles.submitBtn}>
-            Submit
-          </button>
-        ) : (
-          <button type="submit" disabled>
-            Submit
-          </button>
-        )}
-      </div>
-      <Link to="/" className={styles.smallLink}>
-        Go to main page
-      </Link>
+      <SubmitBtn isValid={isValid} />
     </form>
   );
 };
