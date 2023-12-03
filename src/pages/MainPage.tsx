@@ -17,7 +17,7 @@ const MainPage = () => {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [data]);
+  }, [data, dispatch]);
 
   return (
     <>
