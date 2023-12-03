@@ -243,7 +243,7 @@ const UncontrolledForm = () => {
         )}
       </div>
 
-      <div className={styles.inputBlock}>
+      <div className={`${styles.inputBlock} ${styles.passwordBlock}`}>
         <label className={styles.label} htmlFor="password">
           Password
         </label>
@@ -296,7 +296,9 @@ const UncontrolledForm = () => {
       </div>
 
       <div>
-        <button type="submit">Submit</button>
+        <button type="submit" className={styles.submitBtn}>
+          Submit
+        </button>
       </div>
       <Link className={styles.smallLink} to="/">
         Go to main page

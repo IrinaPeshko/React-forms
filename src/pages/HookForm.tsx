@@ -182,7 +182,7 @@ const HookForm = () => {
         )}
       </div>
 
-      <div className={styles.inputBlock}>
+      <div className={`${styles.inputBlock} ${styles.passwordBlock}`}>
         <label className={styles.label} htmlFor="password">
           Password
         </label>
@@ -231,7 +231,9 @@ const HookForm = () => {
 
       <div>
         {isValid ? (
-          <button type="submit">Submit</button>
+          <button type="submit" className={styles.submitBtn}>
+            Submit
+          </button>
         ) : (
           <button type="submit" disabled>
             Submit
