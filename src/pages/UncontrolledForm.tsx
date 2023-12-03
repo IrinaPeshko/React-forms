@@ -30,8 +30,6 @@ const UncontrolledForm = () => {
   const actualData = useAppSelector((store) => store.data);
 
   const [errors, setErrors] = useState<IUncontrolledForm>({});
-  const [imagePreview, setImagePreview] = useState<string>('');
-  const [imageObject, setImageObject] = useState<File>();
   const [passwordStrengthValue, setPasswordStrengthValue] = useState<number>(0);
   const dispatch = useAppDispatch();
 
@@ -56,10 +54,8 @@ const UncontrolledForm = () => {
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0] instanceof File) {
-      const file = event.target.files[0];
-      setImagePreview(URL.createObjectURL(file));
-      setImageObject(file);
+    if (event.target.files && imageRef.current) {
+      imageRef.current.files = event.target.files;
     }
   };
 
@@ -92,7 +88,7 @@ const UncontrolledForm = () => {
         : undefined,
       name: nameRef.current?.value,
       password: passwordRef.current?.value,
-      picture: imageObject,
+      picture: imageRef.current?.files ? imageRef.current?.files[0] : undefined,
     };
     const isValidate = await validateData(data);
     if (isValidate && data.picture) {
@@ -184,9 +180,6 @@ const UncontrolledForm = () => {
             handleInputChange('picture');
           }}
         />
-        {imagePreview && (
-          <img className={styles.fileImage} src={imagePreview} alt="Preview" />
-        )}
         {errors.picture && typeof errors.picture === 'string' && (
           <p className={`${styles.errorMessage}`}>{errors.picture}</p>
         )}
